@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/startup_frontend/static/css/main.6dfacabf.css",
-    "main.js": "/startup_frontend/static/js/main.7303da54.js",
+    "main.js": "/startup_frontend/static/js/main.a9e6a8d0.js",
     "static/js/239.05de1e50.chunk.js": "/startup_frontend/static/js/239.05de1e50.chunk.js",
     "static/js/977.25405e68.chunk.js": "/startup_frontend/static/js/977.25405e68.chunk.js",
     "static/js/455.35bfa119.chunk.js": "/startup_frontend/static/js/455.35bfa119.chunk.js",
@@ -21,7 +21,6 @@
     "static/media/kluchnik.jpg": "/startup_frontend/static/media/kluchnik.9484983449806182ddd6.jpg",
     "static/media/mainPage4.jpg": "/startup_frontend/static/media/mainPage4.f69bf836d799edb587a8.jpg",
     "static/media/pathai_1.png": "/startup_frontend/static/media/pathai_1.a5fe5041e32870250484.png",
-    "static/media/logo.png": "/startup_frontend/static/media/logo.4f687ed51fdf353282cf.png",
     "static/media/background.jpeg": "/startup_frontend/static/media/background.782f98b419380927f93b.jpeg",
     "static/media/naumov.jpg": "/startup_frontend/static/media/naumov.e24c3e7034db98519842.jpg",
     "static/media/HistArch.png": "/startup_frontend/static/media/HistArch.949eb69fdc4e5c37fd28.png",
@@ -34,18 +33,19 @@
     "static/media/логотип партнера 4.png": "/startup_frontend/static/media/логотип партнера 4.a4924b780f211a8b180a.png",
     "static/media/логотип партнера 5.jpg": "/startup_frontend/static/media/логотип партнера 5.443db0cc0321dadbb61e.jpg",
     "static/media/логотип партнера 1.jpg": "/startup_frontend/static/media/логотип партнера 1.403f9d06343cb6b564d8.jpg",
+    "static/media/logo.png": "/startup_frontend/static/media/logo.4b4c09a43f77b25fc141.png",
     "static/media/vk-icon.svg": "/startup_frontend/static/media/vk-icon.ebdcc8ebf3291c412785dd2bda72b030.svg",
     "index.html": "/startup_frontend/index.html",
     "static/media/filter_icon.svg": "/startup_frontend/static/media/filter_icon.7f8899c92459cae2d50a48aa5055e17d.svg",
     "static/media/tg-icon.svg": "/startup_frontend/static/media/tg-icon.8a224561e4db6d1324413ac87ec42d36.svg",
     "main.6dfacabf.css.map": "/startup_frontend/static/css/main.6dfacabf.css.map",
-    "main.7303da54.js.map": "/startup_frontend/static/js/main.7303da54.js.map",
+    "main.a9e6a8d0.js.map": "/startup_frontend/static/js/main.a9e6a8d0.js.map",
     "239.05de1e50.chunk.js.map": "/startup_frontend/static/js/239.05de1e50.chunk.js.map",
     "455.35bfa119.chunk.js.map": "/startup_frontend/static/js/455.35bfa119.chunk.js.map",
     "453.1dd533fa.chunk.js.map": "/startup_frontend/static/js/453.1dd533fa.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6dfacabf.css",
-    "static/js/main.7303da54.js"
+    "static/js/main.a9e6a8d0.js"
   ]
 }
