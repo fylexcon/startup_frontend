@@ -1,10 +1,10 @@
 {
   "files": {
     "main.css": "/startup_frontend/static/css/main.6dfacabf.css",
-    "main.js": "/startup_frontend/static/js/main.ad87f687.js",
+    "main.js": "/startup_frontend/static/js/main.76a5b80f.js",
     "static/js/239.05de1e50.chunk.js": "/startup_frontend/static/js/239.05de1e50.chunk.js",
     "static/js/977.25405e68.chunk.js": "/startup_frontend/static/js/977.25405e68.chunk.js",
-    "static/js/455.35bfa119.chunk.js": "/startup_frontend/static/js/455.35bfa119.chunk.js",
+    "static/js/455.e1602471.chunk.js": "/startup_frontend/static/js/455.e1602471.chunk.js",
     "static/js/453.1dd533fa.chunk.js": "/startup_frontend/static/js/453.1dd533fa.chunk.js",
     "static/media/Breast_cancer_img.jpg": "/startup_frontend/static/media/Breast_cancer_img.c342c9c272135d588795.jpg",
     "static/media/mainPage2.jpg": "/startup_frontend/static/media/mainPage2.10f8b0e641c4a6b93d1c.jpg",
@@ -39,13 +39,13 @@
     "static/media/filter_icon.svg": "/startup_frontend/static/media/filter_icon.7f8899c92459cae2d50a48aa5055e17d.svg",
     "static/media/tg-icon.svg": "/startup_frontend/static/media/tg-icon.8a224561e4db6d1324413ac87ec42d36.svg",
     "main.6dfacabf.css.map": "/startup_frontend/static/css/main.6dfacabf.css.map",
-    "main.ad87f687.js.map": "/startup_frontend/static/js/main.ad87f687.js.map",
+    "main.76a5b80f.js.map": "/startup_frontend/static/js/main.76a5b80f.js.map",
     "239.05de1e50.chunk.js.map": "/startup_frontend/static/js/239.05de1e50.chunk.js.map",
-    "455.35bfa119.chunk.js.map": "/startup_frontend/static/js/455.35bfa119.chunk.js.map",
+    "455.e1602471.chunk.js.map": "/startup_frontend/static/js/455.e1602471.chunk.js.map",
     "453.1dd533fa.chunk.js.map": "/startup_frontend/static/js/453.1dd533fa.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6dfacabf.css",
-    "static/js/main.ad87f687.js"
+    "static/js/main.76a5b80f.js"
   ]
 }
