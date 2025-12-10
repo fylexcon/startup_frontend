@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
 
+// Animasyonlar
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -270,11 +271,10 @@ export const StatSubitle = styled.p`
 `;
 
 export const MainFooterContainer = styled.div`
-  margin-top: auto;
-  padding-bottom: 40px;
-  width: 100%;
+  margin-bottom: 0; /* Boşluk kaldırıldı, footer tam otursun */
 `;
 
+// Eski exportlar
 export const Card = styled.div``;
 export const Overlay = styled.div``;
 export const Label = styled.span``;

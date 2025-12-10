@@ -1,6 +1,7 @@
 {
   "name": "caladrius",
   "version": "0.1.0",
+  "homepage": "https://fylexcon.github.io/startup_frontend",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -35,7 +36,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -61,6 +64,7 @@
     "@types/react": "^18.3.27",
     "@types/react-dom": "^18.3.7",
     "@types/react-router-dom": "^5.3.3",
-    "@types/styled-components": "^5.1.36"
+    "@types/styled-components": "^5.1.36",
+    "gh-pages": "^6.3.0"
   }
 }

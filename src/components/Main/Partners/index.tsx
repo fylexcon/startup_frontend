@@ -13,7 +13,6 @@ import Aha3 from "../../../assets/aha3.jpg";
 import Aha4 from "../../../assets/aha4.png"; // PNG olduğuna dikkat
 import Aha5 from "../../../assets/aha5.jpg";
 import Aha6 from "../../../assets/aha6.png"; // PNG
-import Aha7 from "../../../assets/aha7.jpg";
 
 const PartnerData = [
   { image: Aha1, name: "Partner 1" },
@@ -22,7 +21,6 @@ const PartnerData = [
   { image: Aha4, name: "Partner 4" },
   { image: Aha5, name: "Partner 5" },
   { image: Aha6, name: "Partner 6" },
-  { image: Aha7, name: "Sponsor 7" },
 ];
 
 export default function Partners() {

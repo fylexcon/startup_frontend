@@ -28,7 +28,7 @@ import {
   StatCard,
   Amount,
   StatSubitle,
-  MainFooterContainer,
+  MainFooterContainer, // Bunun styles.ts içinde olduğundan emin ol
 } from "./styles";
 
 import page4 from "../../assets/mainPage4.jpg";
@@ -36,8 +36,8 @@ import page5 from "../../assets/mainPage5.jpg";
 import page6 from "../../assets/covid19.jpg";
 import Comp from "../../assets/Comp.png";
 
-// Partner bileşenini çağırıyoruz
-import Partners from "./Partners";
+// SADECE FOOTER IMPORT EDİYORUZ
+import Footer from "../Footer";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -54,60 +54,47 @@ export default function Main() {
   ];
 
   const features = [
-    {
-      title: "Облачный доступ",
-      subtitle:
-        "Онлайн решение для анализа медицинских изображений в любое время.",
-    },
+    { title: "Облачный доступ", subtitle: "Онлайн решение для анализа." },
     {
       title: "Второе мнение",
-      subtitle: "Платформа обеспечивает быстрые консультации с экспертами.",
+      subtitle: "Платформа обеспечивает быстрые консультации.",
     },
     {
       title: "Аннотирование",
-      subtitle: "Умные AI-инструменты позволяют точную разметку образцов.",
+      subtitle: "Умные AI-инструменты позволяют точную разметку.",
     },
   ];
 
   const statistics = [
     { amount: "10+", subtitle: "разработанных инструментов AI" },
     { amount: "105+", subtitle: "аннотированных наборов данных" },
-    { amount: "5+", subtitle: "клиник-партнеров" },
+    { amount: "5+", subtitle: "клиник и больниц участвуют" },
   ];
 
   return (
     <MainPageContainer>
-      {/* 1. HERO */}
       <HeroSection>
         <HeroContent>
           <h1>
             CALADRIUS <br /> Технологии Будущего
           </h1>
-          <p>
-            Комплексная платформа для анализа цифровой патологии на основе ИИ.
-            Диагностика, Исследования и Обучение в одном месте.
-          </p>
+          <p>Комплексная платформа для анализа цифровой патологии.</p>
           <ScrollButton onClick={scrollToDetails}>Узнать больше ↓</ScrollButton>
         </HeroContent>
       </HeroSection>
 
-      {/* 2. DETAYLAR */}
       <div ref={detailsRef}>
         <ContentSection>
-          <MainTitle>Интеллектуальный анализ медицинских данных</MainTitle>
-          <MainSubitle>
-            CALADRIUS предоставляет полный цифровой рабочий процесс для
-            патологоанатомов, студентов и исследователей.
-          </MainSubitle>
+          <MainTitle>Интеллектуальный анализ</MainTitle>
+          <MainSubitle>Полный цифровой рабочий процесс.</MainSubitle>
           <SectionDivider>
             <Line />
-            <ProductName>Доступные модули</ProductName>
+            <ProductName>Модули</ProductName>
             <Line />
           </SectionDivider>
         </ContentSection>
       </div>
 
-      {/* 3. KARTLAR */}
       <TestCardsGrid>
         {testData.map((item, i) => (
           <TestCard key={i} onClick={() => navigate("/projects")}>
@@ -117,11 +104,10 @@ export default function Main() {
         ))}
       </TestCardsGrid>
 
-      {/* 4. ÖZELLİKLER */}
       <FeatureSection>
         <FeatureGrid>
           <FeatureImage>
-            <img src={Comp} alt="Platform interface" />
+            <img src={Comp} alt="Interface" />
           </FeatureImage>
           <CompContainer>
             {features.map((f, i) => (
@@ -134,7 +120,6 @@ export default function Main() {
         </FeatureGrid>
       </FeatureSection>
 
-      {/* 5. İSTATİSTİKLER */}
       <StatisticWrapper>
         <StatTitle>Наши достижения</StatTitle>
         <StatisticsContainer>
@@ -147,9 +132,9 @@ export default function Main() {
         </StatisticsContainer>
       </StatisticWrapper>
 
-      {/* 6. PARTNERLER (EN ALTA ALINDI) */}
+      {/* FOOTER: Partnerler ve Aha7 içinde */}
       <MainFooterContainer>
-        <Partners />
+        <Footer />
       </MainFooterContainer>
     </MainPageContainer>
   );
