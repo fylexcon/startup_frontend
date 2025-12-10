@@ -3,33 +3,32 @@ import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Box,
-  Container,
   Grid,
-  Paper,
+  Card,
+  CardContent,
   Typography,
-  Avatar,
   Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  Tab,
+  Avatar,
+  Chip,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  Menu,
-  MenuItem,
+  Paper,
+  IconButton,
+  Divider,
   TextField,
   InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Tab,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
-  School,
   Group,
   Assignment,
   MoreVert,
@@ -39,55 +38,61 @@ import {
   CheckCircle,
   AccessTime,
   Person,
+  Logout,
+  School,
 } from "@mui/icons-material";
 import styled from "styled-components";
 
 // --- STYLED COMPONENTS ---
-const DashboardContainer = styled.div`
-  min-height: 100vh;
+const DashboardContainer = styled(Box)`
+  padding: 100px 20px 20px;
   background-color: #f8fafc;
-  padding-top: 20px;
-  padding-bottom: 40px;
+  min-height: 100vh;
 `;
 
-const HeaderSection = styled(Paper)`
+// Sol Panel (Profil ve Filtreler)
+const SidebarPanel = styled(Paper)`
   padding: 24px;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  background: white;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 `;
 
-const StatsCard = styled(Paper)`
-  padding: 20px;
-  border-radius: 12px;
-  height: 100%;
-  transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const UserInfoPanel = styled(Paper)`
-  padding: 24px;
-  border-radius: 12px;
-  height: 100%;
+const ProfileSection = styled(Box)`
   text-align: center;
-  border: 1px solid #e2e8f0;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+`;
+
+// Sağ Panel (İçerik)
+const ContentPanel = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+// İstatistik Kartları
+const StatCard = styled(Card)`
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  transition: transform 0.2s;
+  &:hover {
+    transform: translateY(-4px);
+  }
 `;
 
 // İsim Linkleri için Özel Stil
 const NameLink = styled(Link)`
   text-decoration: none;
-  color: #2563eb;
+  color: #1e293b;
   font-weight: 600;
   transition: color 0.2s;
   &:hover {
-    color: #1e40af;
-    text-decoration: underline;
+    color: #6366f1;
   }
 `;
 
@@ -136,7 +141,6 @@ const mockStudents = [
 ];
 
 const mockGrades = [
-  // issueDate (Veriliş Tarihi) eklendi
   {
     id: 1,
     studentName: "Иван Петров",
@@ -169,148 +173,243 @@ const mockGrades = [
   },
 ];
 
-const TeacherDashboard: React.FC = () => {
-  const { user } = useAuth();
+const TeacherDashboard = () => {
+  const { user, logout } = useAuth();
   const [tabValue, setTabValue] = useState("1");
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) =>
-    setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
+  // FILTRE STATE'LERİ
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterGroup, setFilterGroup] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  // FİLTRELEME MANTIĞI
+  const filteredStudents = mockStudents.filter((s) => {
+    const matchSearch = s.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchGroup = filterGroup === "all" || s.group === filterGroup;
+    const matchStatus = filterStatus === "all" || s.status === filterStatus;
+    return matchSearch && matchGroup && matchStatus;
+  });
+
+  const filteredGrades = mockGrades.filter((g) => {
+    return g.studentName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <DashboardContainer>
-      <Container maxWidth="xl">
-        {/* HEADER */}
-        <HeaderSection elevation={0}>
-          <Grid container alignItems="center" spacing={3}>
-            <Grid item>
+      <Grid container spacing={3}>
+        {/* --- SOL PANEL: PROFİL VE FİLTRELER --- */}
+        <Grid item xs={12} md={3}>
+          <SidebarPanel elevation={0}>
+            {/* Profil */}
+            <ProfileSection>
               <Avatar
                 sx={{
                   width: 80,
                   height: 80,
-                  border: "4px solid rgba(255,255,255,0.3)",
+                  margin: "0 auto 16px",
+                  bgcolor: "#6366f1",
+                  fontSize: 32,
                 }}
               >
-                {user?.firstName?.charAt(0)}
+                {user?.firstName?.[0] || "T"}
               </Avatar>
-            </Grid>
-            <Grid item xs>
-              <Typography variant="h4" fontWeight="bold">
-                Добро пожаловать, {user?.firstName}!
-              </Typography>
-              <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-                Панель преподавателя | {user?.institution}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                sx={{
-                  bgcolor: "white",
-                  color: "#2563eb",
-                  "&:hover": { bgcolor: "#f1f5f9" },
-                }}
-              >
-                Создать задание
-              </Button>
-            </Grid>
-          </Grid>
-        </HeaderSection>
-
-        <Grid container spacing={3}>
-          {/* SOL PANEL */}
-          <Grid item xs={12} lg={3}>
-            <UserInfoPanel elevation={0}>
-              <Avatar
-                sx={{
-                  width: 100,
-                  height: 100,
-                  margin: "0 auto",
-                  mb: 2,
-                  bgcolor: "#e0e7ff",
-                  color: "#3730a3",
-                }}
-              >
-                <School sx={{ fontSize: 50 }} />
-              </Avatar>
-              <Typography variant="h6">
+              <Typography variant="h6" fontWeight="bold">
                 {user?.firstName} {user?.lastName}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {user?.position}
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-              <List>
-                <ListItem>
-                  <ListItemText primary="Всего студентов" secondary="120" />
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Активные группы" secondary="4" />
-                </ListItem>
-              </List>
-            </UserInfoPanel>
-          </Grid>
+              <Chip
+                label="Преподаватель"
+                color="primary"
+                size="small"
+                sx={{ mt: 1 }}
+              />
 
-          {/* SAĞ PANEL */}
-          <Grid item xs={12} lg={9}>
-            {/* İSTATİSTİKLER */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-              {[
-                {
-                  icon: <Group sx={{ color: "#2563eb" }} />,
-                  label: "Группы",
-                  val: "4",
-                },
-                {
-                  icon: <Person sx={{ color: "#10b981" }} />,
-                  label: "Студенты",
-                  val: "120",
-                },
-                {
-                  icon: <Assignment sx={{ color: "#f59e0b" }} />,
-                  label: "Задания",
-                  val: "12",
-                },
-                {
-                  icon: <AccessTime sx={{ color: "#ef4444" }} />,
-                  label: "На проверке",
-                  val: "8",
-                },
-                {
-                  icon: <CheckCircle sx={{ color: "#8b5cf6" }} />,
-                  label: "Завершено",
-                  val: "85%",
-                },
-              ].map((stat, i) => (
-                <Grid item xs={12} sm={6} md={2.4} key={i}>
-                  <StatsCard elevation={0}>
-                    <Box display="flex" alignItems="center" mb={1}>
-                      {stat.icon}
-                      <Typography
-                        ml={1}
-                        variant="subtitle2"
-                        color="textSecondary"
-                      >
-                        {stat.label}
+              <Box mt={2} textAlign="left">
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  display="block"
+                >
+                  Учреждение: <strong>{user?.institution}</strong>
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  display="block"
+                >
+                  Позиция: <strong>{user?.position}</strong>
+                </Typography>
+              </Box>
+
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                fullWidth
+                startIcon={<Logout />}
+                onClick={logout}
+                sx={{ mt: 3 }}
+              >
+                Выйти
+              </Button>
+            </ProfileSection>
+
+            {/* Filtreler */}
+            <Box>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+              >
+                <FilterList fontSize="small" /> Фильтры
+              </Typography>
+
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Поиск..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 2 }}
+              />
+
+              <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                <InputLabel>Группа (Grup)</InputLabel>
+                <Select
+                  value={filterGroup}
+                  label="Группа"
+                  onChange={(e) => setFilterGroup(e.target.value)}
+                >
+                  <MenuItem value="all">Все</MenuItem>
+                  <MenuItem value="Группа 1">Группа 1</MenuItem>
+                  <MenuItem value="Группа 2">Группа 2</MenuItem>
+                  <MenuItem value="Группа 3">Группа 3</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth size="small">
+                <InputLabel>Статус</InputLabel>
+                <Select
+                  value={filterStatus}
+                  label="Статус"
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <MenuItem value="all">Все</MenuItem>
+                  <MenuItem value="active">Активен</MenuItem>
+                  <MenuItem value="inactive">Неактивен</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+
+            {/* Hızlı İşlem */}
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              fullWidth
+              sx={{ bgcolor: "#6366f1", mt: 2 }}
+            >
+              Создать задание
+            </Button>
+          </SidebarPanel>
+        </Grid>
+
+        {/* --- SAĞ PANEL: İÇERİK --- */}
+        <Grid item xs={12} md={9}>
+          <ContentPanel>
+            {/* İstatistikler */}
+            <Grid container spacing={2}>
+              <Grid item xs={6} md={2.4}>
+                <StatCard>
+                  <CardContent>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <Group color="primary" fontSize="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        Группы
                       </Typography>
                     </Box>
-                    <Typography variant="h4" fontWeight="bold">
-                      {stat.val}
+                    <Typography variant="h5" fontWeight="bold">
+                      4
                     </Typography>
-                  </StatsCard>
-                </Grid>
-              ))}
+                  </CardContent>
+                </StatCard>
+              </Grid>
+              <Grid item xs={6} md={2.4}>
+                <StatCard>
+                  <CardContent>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <Person color="success" fontSize="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        Студенты
+                      </Typography>
+                    </Box>
+                    <Typography variant="h5" fontWeight="bold">
+                      120
+                    </Typography>
+                  </CardContent>
+                </StatCard>
+              </Grid>
+              <Grid item xs={6} md={2.4}>
+                <StatCard>
+                  <CardContent>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <Assignment color="warning" fontSize="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        Задания
+                      </Typography>
+                    </Box>
+                    <Typography variant="h5" fontWeight="bold">
+                      12
+                    </Typography>
+                  </CardContent>
+                </StatCard>
+              </Grid>
+              <Grid item xs={6} md={2.4}>
+                <StatCard>
+                  <CardContent>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <AccessTime color="error" fontSize="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        Проверка
+                      </Typography>
+                    </Box>
+                    <Typography variant="h5" fontWeight="bold">
+                      8
+                    </Typography>
+                  </CardContent>
+                </StatCard>
+              </Grid>
+              <Grid item xs={6} md={2.4}>
+                <StatCard>
+                  <CardContent>
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <CheckCircle sx={{ color: "#8b5cf6" }} fontSize="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        Завершено
+                      </Typography>
+                    </Box>
+                    <Typography variant="h5" fontWeight="bold">
+                      85%
+                    </Typography>
+                  </CardContent>
+                </StatCard>
+              </Grid>
             </Grid>
 
             {/* TABLOLAR */}
             <Paper
-              elevation={0}
               sx={{
-                borderRadius: 3,
-                border: "1px solid #e2e8f0",
+                borderRadius: 4,
                 overflow: "hidden",
+                border: "1px solid #e2e8f0",
+                boxShadow: "none",
               }}
             >
               <TabContext value={tabValue}>
@@ -318,14 +417,27 @@ const TeacherDashboard: React.FC = () => {
                   sx={{
                     borderBottom: 1,
                     borderColor: "divider",
-                    bgcolor: "white",
+                    bgcolor: "#fff",
                     px: 2,
-                    pt: 2,
                   }}
                 >
-                  <TabList onChange={(_, v) => setTabValue(v)}>
-                    <Tab label="Мои студенты" value="1" />
-                    <Tab label="Журнал оценок" value="2" />
+                  <TabList
+                    onChange={(_, v) => setTabValue(v)}
+                    textColor="primary"
+                    indicatorColor="primary"
+                  >
+                    <Tab
+                      label="Мои студенты"
+                      value="1"
+                      icon={<School fontSize="small" />}
+                      iconPosition="start"
+                    />
+                    <Tab
+                      label="Журнал оценок"
+                      value="2"
+                      icon={<Assignment fontSize="small" />}
+                      iconPosition="start"
+                    />
                   </TabList>
                 </Box>
 
@@ -335,24 +447,32 @@ const TeacherDashboard: React.FC = () => {
                     <Table>
                       <TableHead sx={{ bgcolor: "#f8fafc" }}>
                         <TableRow>
-                          <TableCell width={60}></TableCell>
+                          <TableCell width={50}></TableCell>
                           <TableCell>ФИО</TableCell>
                           <TableCell>Группа</TableCell>
                           <TableCell>Курс</TableCell>
                           <TableCell>Факультет</TableCell>
-                          {/* SİLİNDİ: Kayıt Tarihi Kaldırıldı */}
                           <TableCell>Статус</TableCell>
                           <TableCell align="right">Действия</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {mockStudents.map((s) => (
+                        {filteredStudents.map((s) => (
                           <TableRow key={s.id} hover>
                             <TableCell>
-                              <Avatar>{s.name.charAt(0)}</Avatar>
+                              <Avatar
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  fontSize: 14,
+                                  bgcolor: "#e2e8f0",
+                                  color: "#475569",
+                                }}
+                              >
+                                {s.name.charAt(0)}
+                              </Avatar>
                             </TableCell>
                             <TableCell>
-                              {/* GÜNCELLENDİ: Link */}
                               <NameLink to={`/student/${s.id}`}>
                                 {s.name}
                               </NameLink>
@@ -371,14 +491,12 @@ const TeacherDashboard: React.FC = () => {
                                   s.status === "active" ? "success" : "default"
                                 }
                                 size="small"
+                                variant="outlined"
                               />
                             </TableCell>
                             <TableCell align="right">
-                              <IconButton
-                                size="small"
-                                onClick={handleMenuClick}
-                              >
-                                <MoreVert />
+                              <IconButton size="small">
+                                <MoreVert fontSize="small" />
                               </IconButton>
                             </TableCell>
                           </TableRow>
@@ -396,7 +514,6 @@ const TeacherDashboard: React.FC = () => {
                         <TableRow>
                           <TableCell>Студент</TableCell>
                           <TableCell>Кейс</TableCell>
-                          {/* EKLENDİ: Veriliş Tarihi */}
                           <TableCell>Дата выдачи</TableCell>
                           <TableCell>Дата сдачи</TableCell>
                           <TableCell>Статус</TableCell>
@@ -405,25 +522,31 @@ const TeacherDashboard: React.FC = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {mockGrades.map((g) => (
+                        {filteredGrades.map((g) => (
                           <TableRow key={g.id} hover>
                             <TableCell>
-                              {/* GÜNCELLENDİ: Link */}
                               <NameLink to={`/student/${g.studentId}`}>
                                 {g.studentName}
                               </NameLink>
                             </TableCell>
                             <TableCell>{g.case}</TableCell>
-                            {/* EKLENDİ: Veri Gösterimi */}
                             <TableCell>{g.issueDate}</TableCell>
                             <TableCell>{g.date}</TableCell>
                             <TableCell>
                               <Chip
                                 label={
-                                  g.status === "graded" ? "Оценено" : "В работе"
+                                  g.status === "graded"
+                                    ? "Оценено"
+                                    : g.status === "submitted"
+                                    ? "Сдано"
+                                    : "В работе"
                                 }
                                 color={
-                                  g.status === "graded" ? "success" : "warning"
+                                  g.status === "graded"
+                                    ? "success"
+                                    : g.status === "submitted"
+                                    ? "warning"
+                                    : "default"
                                 }
                                 size="small"
                               />
@@ -432,7 +555,11 @@ const TeacherDashboard: React.FC = () => {
                               {g.grade}
                             </TableCell>
                             <TableCell align="right">
-                              <Button size="small" variant="outlined">
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                sx={{ borderRadius: 2 }}
+                              >
                                 {g.status === "graded" ? "Изменить" : "Оценить"}
                               </Button>
                             </TableCell>
@@ -444,20 +571,9 @@ const TeacherDashboard: React.FC = () => {
                 </TabPanel>
               </TabContext>
             </Paper>
-          </Grid>
+          </ContentPanel>
         </Grid>
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleMenuClose}>Редактировать</MenuItem>
-          <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
-            Удалить
-          </MenuItem>
-        </Menu>
-      </Container>
+      </Grid>
     </DashboardContainer>
   );
 };

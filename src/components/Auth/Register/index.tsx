@@ -1,103 +1,172 @@
-// src/components/Auth/index.tsx (MEVCUT DOSYANI GÜNCELLE)
-import React, { useState } from "react";
-import { useAuth } from "../../../Contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import {
-  AuthContainer,
-  AuthTitle,
-  BackGroundWrapper,
-  FormWrapper,
-  LogoFromContainer,
-  FormContainer,
-  StyledTextField,
-  StyledButton,
-  DontHaveAcc,
-  DontHaveAccTitle,
-  CreateAcc,
-} from "./styles";
-import { Box, Alert } from "@mui/material";
-import Background from "../../../assets/background.jpeg";
-import Logo from "../../../assets/logo.png";
-
-const Auth: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    
-    const success = await login(email, password);
-    
-    if (success) {
-      navigate("/dashboard");
-    } else {
-      setError("Неверный email или пароль");
-    }
-  };
-
-  // Test kullanıcıları bilgisi
-  const testUsers = [
-    { email: 'student@test.com', password: '123456', role: 'Студент' },
-    { email: 'teacher@test.com', password: '123456', role: 'Преподаватель' },
-    { email: 'doc@test.com', password: '123456', role: 'Врач' }
-  ];
-
-  return (
-    <AuthContainer>
-      <BackGroundWrapper>
-        <img src={Background} alt="background" />
-      </BackGroundWrapper>
-
-      <FormWrapper>
-        <LogoFromContainer>
-          <img src={Logo} alt="logo" />
-        </LogoFromContainer>
-
-        <FormContainer>
-          <AuthTitle>Вход в систему</AuthTitle>
-
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <StyledTextField 
-              label="Email" 
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
-            />
-            <StyledTextField 
-              label="Пароль" 
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required 
-            />
-            <StyledButton type="submit" variant="contained">Войти</StyledButton>
-          </Box>
-
-          {/* Test kullanıcıları */}
-          <Box sx={{ mt: 3, p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
-            <div style={{ fontSize: '14px', marginBottom: '10px', fontWeight: 'bold' }}>Тестовые пользователи:</div>
-            {testUsers.map((user, index) => (
-              <div key={index} style={{ fontSize: '12px', margin: '5px 0' }}>
-                <strong>{user.role}:</strong> {user.email} / {user.password}
-              </div>
-            ))}
-          </Box>
-
-          <DontHaveAcc>
-            <DontHaveAccTitle>Нет аккаунта?</DontHaveAccTitle>
-            <CreateAcc to="/register">Зарегистрироваться</CreateAcc>
-          </DontHaveAcc>
-        </FormContainer>
-      </FormWrapper>
-    </AuthContainer>
-  );
-};
-
-export default Auth;
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AuthContainer,
+  BackGroundWrapper,
+  FormWrapper,
+  LogoFromContainer,
+  AuthTitle,
+  AuthSubtitle,
+  FormContainer,
+  StyledTextField,
+  StyledButton,
+  DontHaveAcc,
+  CreateAcc,
+} from "./styles";
+import {
+  Box,
+  MenuItem,
+  Alert,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import {
+  Visibility,
+  VisibilityOff,
+  Email,
+  Lock,
+  Person,
+  School,
+  MedicalServices,
+} from "@mui/icons-material";
+import Background from "../../../assets/background.jpeg";
+import Logo from "../../../assets/logo.png";
+
+export default function Register() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "student",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Kayıt mantığı buraya gelecek
+    console.log("Kayıt Bilgileri:", formData);
+    // Şimdilik başarılı varsayıp login sayfasına atıyoruz
+    navigate("/auth");
+  };
+
+  return (
+    <AuthContainer>
+      <BackGroundWrapper>
+        <img src={Background} alt="background" />
+      </BackGroundWrapper>
+
+      <FormWrapper>
+        <LogoFromContainer>
+          <img src={Logo} alt="logo" />
+        </LogoFromContainer>
+
+        <FormContainer>
+          <AuthTitle>Создать аккаунт</AuthTitle>
+          <AuthSubtitle>Присоединяйтесь к платформе Caladrius</AuthSubtitle>
+
+          {error && <Alert severity="error">{error}</Alert>}
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <StyledTextField
+              label="ФИО (Ad Soyad)"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Person color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <StyledTextField
+              label="Email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Email color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <StyledTextField
+              select
+              label="Роль (Rol)"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+            >
+              <MenuItem value="student">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <School fontSize="small" /> Студент
+                </Box>
+              </MenuItem>
+              <MenuItem value="doctor">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <MedicalServices fontSize="small" /> Врач
+                </Box>
+              </MenuItem>
+              <MenuItem value="teacher">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Person fontSize="small" /> Преподаватель
+                </Box>
+              </MenuItem>
+            </StyledTextField>
+
+            <StyledTextField
+              label="Пароль"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+              value={formData.password}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <StyledButton type="submit" variant="contained">
+              Зарегистрироваться
+            </StyledButton>
+          </Box>
+
+          <DontHaveAcc>
+            <span>Уже есть аккаунт?</span>
+            <CreateAcc to="/auth">Войти</CreateAcc>
+          </DontHaveAcc>
+        </FormContainer>
+      </FormWrapper>
+    </AuthContainer>
+  );
+}

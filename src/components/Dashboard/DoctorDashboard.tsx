@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../Contexts/AuthContext";
-import { useNavigate, Link } from "react-router-dom"; // Link Eklendi
+import { useNavigate, Link } from "react-router-dom";
 import {
   Box,
   Grid,
@@ -20,7 +20,6 @@ import {
   IconButton,
   Divider,
   Alert,
-  LinearProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -30,592 +29,463 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Snackbar,
-  Autocomplete,
-  Tooltip,
-  Badge,
+  Slider,
+  InputAdornment,
+  Checkbox,
+  FormControlLabel,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
 } from "@mui/material";
 import {
-  Add,
   PersonAdd,
-  Delete,
   CloudUpload,
-  Psychology,
-  Share,
   Visibility,
-  Download,
-  Edit,
-  AddPhotoAlternate,
+  Psychology,
   Analytics,
-  MedicalServices,
-  Science,
-  LocalHospital,
   FilterList,
+  Search,
+  Edit,
+  Logout,
+  Description,
 } from "@mui/icons-material";
 import styled from "styled-components";
 
 // --- STYLED COMPONENTS ---
 const DashboardContainer = styled(Box)`
   padding: 100px 20px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f8fafc;
   min-height: 100vh;
 `;
 
-const StatsCard = styled(Card)`
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px);
-  border-radius: 15px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.3s ease !important;
-  &:hover {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
-  }
+// Sol Panel (Filtreler ve Profil)
+const SidebarPanel = styled(Paper)`
+  padding: 20px;
+  height: 100%;
+  background: white;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
 `;
 
-const UserInfoPanel = styled(Card)`
-  background: rgba(255, 255, 255, 0.95) !important;
-  padding: 20px !important;
-  border-radius: 15px !important;
+const ProfileCard = styled(Box)`
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-  position: sticky;
-  top: 120px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
 `;
 
-const ActionButton = styled(Button)`
-  height: 60px !important;
-  font-size: 12px !important;
-  transition: all 0.3s ease !important;
+const FilterSection = styled(Box)`
+  margin-bottom: 24px;
+`;
+
+// Sağ Panel (İçerik)
+const ContentPanel = styled(Box)`
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  min-height: 80vh;
+`;
+
+const CaseCard = styled(Card)`
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: none !important;
+  transition: all 0.2s;
   &:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    border-color: #6366f1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1) !important;
   }
 `;
 
 // Link Stili
 const PatientLink = styled(Link)`
   text-decoration: none;
-  color: #1976d2;
-  font-weight: bold;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 16px;
   &:hover {
-    text-decoration: underline;
-    color: #115293;
+    color: #6366f1;
   }
 `;
-
-// Mock Data
-const ICD10_CODES = [
-  { code: "C44.3", description: "Базально-клеточная карцинома кожи" },
-  {
-    code: "C50.9",
-    description: "Злокачественное новообразование молочной железы",
-  },
-  { code: "D22.9", description: "Меланоцитарный невус" },
-  { code: "L40.0", description: "Псориаз обыкновенный" },
-  {
-    code: "D48.5",
-    description: "Новообразование неопределенного характера кожи",
-  },
-];
 
 const DoctorDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
-  const [openICD10Dialog, setOpenICD10Dialog] = useState(false);
-  const [openLabDialog, setOpenLabDialog] = useState(false);
-  const [selectedCase, setSelectedCase] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>("all");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error" | "info",
-  });
 
-  const [newCase, setNewCase] = useState({
-    patientName: "",
-    caseType: "",
-    biopsyMethod: "",
-    description: "",
-    icd10Code: "",
-  });
-  const [labResults, setLabResults] = useState({
-    caseId: "",
-    testType: "",
-    results: "",
-    recommendations: "",
-  });
+  // FİLTRE STATE'LERİ
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCases, setSelectedCases] = useState<string[]>([]);
+  const [ageRange, setAgeRange] = useState<number[]>([18, 85]);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedOrgan, setSelectedOrgan] = useState("all");
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState("all");
 
+  // MOCK DATA (Vakalar)
   const [cases, setCases] = useState([
     {
-      id: "1",
-      patientName: "Пациент Иванов И.И.",
-      caseType: "paid",
-      biopsyMethod: "incisional",
+      id: "4098678",
+      patient: "Иванов И.И.",
+      age: 45,
+      gender: "М",
+      diagnosis: "Базально-клеточная карцинома",
+      organ: "skin",
+      description: "Опухоль в ретромолярной области справа...",
+      date: "2025-10-12",
       status: "active",
-      createdDate: "2025-10-12",
-      aiAnalysis: "pending",
-      wsiUploaded: true,
-      description: "Подозрение на злокачественное новообразование",
-      icd10Code: "C44.3",
-      labResults: null,
-      priority: "high",
+      wsi: true,
     },
     {
-      id: "2",
-      patientName: "Пациента Петрова А.В.",
-      caseType: "insurance",
-      biopsyMethod: "excisional",
+      id: "4098679",
+      patient: "Петрова А.В.",
+      age: 32,
+      gender: "Ж",
+      diagnosis: "Меланома",
+      organ: "skin",
+      description: "Пигментное образование на спине...",
+      date: "2025-10-10",
       status: "completed",
-      createdDate: "2025-10-10",
-      aiAnalysis: "completed",
-      wsiUploaded: true,
-      description: "Контрольная биопсия после лечения",
-      icd10Code: "D22.9",
-      labResults: "Гистология: Доброкачественное новообразование",
-      priority: "normal",
+      wsi: true,
     },
     {
-      id: "3",
-      patientName: "Пациент Сидоров П.П.",
-      caseType: "express",
-      biopsyMethod: "operative",
+      id: "4098680",
+      patient: "Сидоров П.П.",
+      age: 60,
+      gender: "М",
+      diagnosis: "Невус",
+      organ: "liver",
+      description: "Подозрение на метастазы...",
+      date: "2025-10-11",
       status: "active",
-      createdDate: "2025-10-11",
-      aiAnalysis: "not_requested",
-      wsiUploaded: false,
-      description: "Экстренное исследование",
-      icd10Code: "",
-      labResults: null,
-      priority: "urgent",
+      wsi: false,
     },
   ]);
 
-  const stats = {
-    requestsSent: 1,
-    totalRequests: 23,
-    completedRequests: 2,
-    pendingAI: 1,
-    activeWSI: 2,
-    urgentCases: cases.filter((c) => c.priority === "urgent").length,
+  const handleAgeChange = (event: Event, newValue: number | number[]) => {
+    setAgeRange(newValue as number[]);
   };
 
-  // Yardımcı Fonksiyonlar (Renk ve Label)
-  const getCaseTypeLabel = (type: string) =>
-    ({
-      paid: "Платное",
-      insurance: "Страховка",
-      foreign: "Иностр. гражд.",
-      permit: "Вид на жительство",
-      express: "Экспресс",
-      budget: "Бюджет",
-    }[type] || type);
-  const getAIStatusColor = (status: string) =>
-    ({
-      pending: "warning",
-      completed: "success",
-      not_requested: "default",
-      failed: "error",
-    }[status] || "default");
-  const getAIStatusLabel = (status: string) =>
-    ({
-      pending: "Анализ...",
-      completed: "Готов",
-      not_requested: "Не запрошен",
-      failed: "Ошибка",
-    }[status] || status);
-  const getPriorityColor = (priority: string) =>
-    ({ urgent: "error", high: "warning", normal: "info" }[priority] ||
-    "default");
-
-  const handleAddCase = () => {
-    const newCaseData = {
-      id: (cases.length + 1).toString(),
-      ...newCase,
-      status: "active",
-      createdDate: new Date().toISOString().split("T")[0],
-      aiAnalysis: "not_requested",
-      wsiUploaded: false,
-      labResults: null,
-      priority: "normal",
-    };
-    setCases([...cases, newCaseData]);
-    setNewCase({
-      patientName: "",
-      caseType: "",
-      biopsyMethod: "",
-      description: "",
-      icd10Code: "",
-    });
-    setOpenDialog(false);
-    setSnackbar({
-      open: true,
-      message: "Случай успешно добавлен!",
-      severity: "success",
-    });
+  const handleSelectCase = (id: string) => {
+    if (selectedCases.includes(id)) {
+      setSelectedCases(selectedCases.filter((cId) => cId !== id));
+    } else {
+      setSelectedCases([...selectedCases, id]);
+    }
   };
-
-  const handleRequestAI = (caseId: string) => {
-    setCases(
-      cases.map((c) => (c.id === caseId ? { ...c, aiAnalysis: "pending" } : c))
-    );
-    setSnackbar({
-      open: true,
-      message: "AI анализ запущен...",
-      severity: "info",
-    });
-    setTimeout(() => {
-      setCases((prev) =>
-        prev.map((c) =>
-          c.id === caseId ? { ...c, aiAnalysis: "completed" } : c
-        )
-      );
-      setSnackbar({
-        open: true,
-        message: "AI анализ завершен!",
-        severity: "success",
-      });
-    }, 3000);
-  };
-
-  const filteredCases =
-    filterStatus === "all"
-      ? cases
-      : cases.filter((c) => c.status === filterStatus);
-
-  if (!user) return null;
 
   return (
     <DashboardContainer>
       <Grid container spacing={3}>
-        {/* SOL PROFİL PANELİ */}
-        <Grid item xs={12} lg={3}>
-          <UserInfoPanel>
-            <Badge badgeContent={stats.urgentCases} color="error">
+        {/* --- SOL PANEL: PROFİL VE FİLTRELER (Pic 4 Referans Alındı) --- */}
+        <Grid item xs={12} md={3}>
+          <SidebarPanel elevation={0}>
+            {/* Profil Bölümü */}
+            <ProfileCard>
               <Avatar
                 sx={{
-                  width: 100,
-                  height: 100,
-                  margin: "0 auto 15px",
-                  border: "4px solid #6366f1",
+                  width: 80,
+                  height: 80,
+                  margin: "0 auto 12px",
+                  bgcolor: "#6366f1",
+                  fontSize: 24,
                 }}
               >
-                {user.firstName[0]}
-                {user.lastName[0]}
+                {user?.firstName?.[0] || "D"}
               </Avatar>
-            </Badge>
-            <Typography variant="h6" fontWeight="bold">
-              {user.firstName} {user.lastName}
+              <Typography variant="h6" fontWeight="bold">
+                Д-р {user?.lastName || "Волков"}
+              </Typography>
+              <Chip
+                label="Патологоанатом"
+                size="small"
+                color="primary"
+                sx={{ mt: 1, mb: 2 }}
+              />
+
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                startIcon={<Logout />}
+                onClick={logout}
+                fullWidth
+              >
+                Выйти
+              </Button>
+            </ProfileCard>
+
+            {/* Filtreler Bölümü */}
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <FilterList fontSize="small" /> Фильтры
             </Typography>
-            <Chip
-              label="ВРАЧ-ПАТОЛОГОАНАТОМ"
-              color="error"
-              size="small"
-              sx={{ mb: 2, fontWeight: "bold" }}
-            />
-            <Box sx={{ textAlign: "left", mt: 2 }}>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Учреждение:</strong>
-                <br />
-                {user.institution}
+
+            <FilterSection>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Поиск..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 2 }}
+              />
+            </FilterSection>
+
+            <FilterSection>
+              <Typography variant="caption" color="text.secondary" gutterBottom>
+                Возраст
               </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Отделение:</strong>
-                <br />
-                {user.department}
+              <Slider
+                value={ageRange}
+                onChange={handleAgeChange}
+                valueLabelDisplay="auto"
+                min={0}
+                max={100}
+                sx={{ color: "#6366f1" }}
+              />
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="caption">{ageRange[0]}</Typography>
+                <Typography variant="caption">{ageRange[1]}</Typography>
+              </Box>
+            </FilterSection>
+
+            <FilterSection>
+              <Typography variant="caption" color="text.secondary" gutterBottom>
+                Дата приема
               </Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                <strong>Email:</strong>
-                <br />
-                {user.email}
-              </Typography>
-            </Box>
-            <Divider sx={{ my: 2 }} />
+              <TextField
+                fullWidth
+                size="small"
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+            </FilterSection>
+
+            <FilterSection>
+              <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                <InputLabel>Орган (Organ)</InputLabel>
+                <Select
+                  value={selectedOrgan}
+                  label="Орган"
+                  onChange={(e) => setSelectedOrgan(e.target.value)}
+                >
+                  <MenuItem value="all">Все</MenuItem>
+                  <MenuItem value="skin">Кожа (Deri)</MenuItem>
+                  <MenuItem value="liver">Печень (Karaciğer)</MenuItem>
+                  <MenuItem value="lung">Легкие (Akciğer)</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth size="small">
+                <InputLabel>Диагноз (Tanı)</InputLabel>
+                <Select
+                  value={selectedDiagnosis}
+                  label="Диагноз"
+                  onChange={(e) => setSelectedDiagnosis(e.target.value)}
+                >
+                  <MenuItem value="all">Все</MenuItem>
+                  <MenuItem value="melanoma">Меланома</MenuItem>
+                  <MenuItem value="carcinoma">Карцинома</MenuItem>
+                </Select>
+              </FormControl>
+            </FilterSection>
+
             <Button
               variant="contained"
-              color="error"
-              onClick={logout}
-              size="small"
               fullWidth
+              sx={{ bgcolor: "#6366f1", mt: 2 }}
             >
-              Выйти
+              Применить
             </Button>
-          </UserInfoPanel>
+          </SidebarPanel>
         </Grid>
 
-        {/* SAĞ İÇERİK PANELİ */}
-        <Grid item xs={12} lg={9}>
-          {/* HIZLI İŞLEMLER */}
-          <StatsCard sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                Быстрые действия
+        {/* --- SAĞ PANEL: VAKA LİSTESİ VE DETAYLAR --- */}
+        <Grid item xs={12} md={9}>
+          <ContentPanel>
+            {/* Üst Aksiyon Butonları */}
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={4}
+            >
+              <Typography variant="h5" fontWeight="bold" color="text.primary">
+                Клинические случаи (
               </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={6} md={3}>
-                  <ActionButton
-                    variant="contained"
-                    startIcon={<PersonAdd />}
-                    fullWidth
-                    color="primary"
-                    onClick={() => setOpenDialog(true)}
-                  >
-                    Добавить
-                    <br />
-                    случай
-                  </ActionButton>
-                </Grid>
-                <Grid item xs={6} md={3}>
-                  <ActionButton
-                    variant="contained"
-                    startIcon={<CloudUpload />}
-                    fullWidth
-                    color="success"
-                    onClick={() => navigate("/canvas")}
-                  >
-                    Загрузить
-                    <br />
-                    WSI
-                  </ActionButton>
-                </Grid>
-                <Grid item xs={6} md={3}>
-                  <ActionButton
-                    variant="contained"
-                    startIcon={<Science />}
-                    fullWidth
-                    color="warning"
-                  >
-                    Патогистологическое
-                    <br />
-                    исследование
-                  </ActionButton>
-                </Grid>
-                <Grid item xs={6} md={3}>
-                  <ActionButton
-                    variant="contained"
-                    startIcon={<Analytics />}
-                    fullWidth
-                    color="info"
-                    onClick={() => navigate("/archive")}
-                  >
-                    Архив
-                    <br />
-                    пациентов
-                  </ActionButton>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </StatsCard>
+              <Box display="flex" gap={2}>
+                <Button
+                  variant="contained"
+                  startIcon={<PersonAdd />}
+                  onClick={() => setOpenDialog(true)}
+                  sx={{ bgcolor: "#6366f1" }}
+                >
+                  Добавить случай
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  disabled={selectedCases.length === 0}
+                >
+                  Удалить ({selectedCases.length})
+                </Button>
+              </Box>
+            </Box>
 
-          {/* VAKA TABLOSU */}
-          <StatsCard>
-            <CardContent>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
-              >
-                <Typography variant="h6">
-                  Клинические случаи ({filteredCases.length})
-                </Typography>
-                <Box display="flex" gap={2}>
-                  <FormControl size="small" sx={{ minWidth: 150 }}>
-                    <InputLabel>Фильтр</InputLabel>
-                    <Select
-                      value={filterStatus}
-                      onChange={(e) => setFilterStatus(e.target.value)}
-                      label="Фильтр"
-                    >
-                      <MenuItem value="all">Все</MenuItem>
-                      <MenuItem value="active">Активные</MenuItem>
-                      <MenuItem value="completed">Завершенные</MenuItem>
-                    </Select>
-                  </FormControl>
+            {/* Arama Barı */}
+            <TextField
+              fullWidth
+              placeholder="Поиск по номеру случая, имени пациента..."
+              InputProps={{
+                endAdornment: (
                   <Button
                     variant="contained"
-                    startIcon={<PersonAdd />}
-                    onClick={() => setOpenDialog(true)}
+                    sx={{ bgcolor: "#cbd5e1", color: "black" }}
                   >
-                    Добавить случай
+                    Search
                   </Button>
-                </Box>
-              </Box>
+                ),
+              }}
+              sx={{ mb: 4 }}
+            />
 
-              <TableContainer component={Paper} elevation={0}>
-                <Table>
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: "#f5f5f5" }}>
-                      <TableCell>
-                        <strong>Приоритет</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>Пациент</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>Описание</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>ICD-10</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>Тип</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>WSI</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>ИИ Анализ</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>Статус</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>Действия</strong>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredCases.map((case_) => (
-                      <TableRow key={case_.id} hover>
-                        <TableCell>
-                          <Chip
-                            label={
-                              case_.priority === "urgent" ? "Срочно" : "Обычно"
-                            }
-                            color={getPriorityColor(case_.priority) as any}
-                            size="small"
+            {/* Vaka Listesi (Cards) */}
+            <Grid container spacing={2}>
+              {cases.map((caseItem) => (
+                <Grid item xs={12} key={caseItem.id}>
+                  <CaseCard>
+                    <CardContent>
+                      <Grid container alignItems="center" spacing={2}>
+                        {/* Checkbox */}
+                        <Grid item xs={1}>
+                          <Checkbox
+                            checked={selectedCases.includes(caseItem.id)}
+                            onChange={() => handleSelectCase(caseItem.id)}
                           />
-                        </TableCell>
-                        <TableCell>
-                          {/* GÜNCELLENDİ: HASTA İSMİ LİNK YAPILDI */}
-                          <PatientLink to={`/patient/${case_.id}`}>
-                            {case_.patientName}
-                          </PatientLink>
-                          <Typography
-                            variant="caption"
-                            display="block"
-                            color="text.secondary"
+                        </Grid>
+
+                        {/* Vaka Bilgileri */}
+                        <Grid item xs={8}>
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                            mb={1}
                           >
-                            {case_.createdDate}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="caption">
-                            {case_.description}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={case_.icd10Code || "-"}
-                            size="small"
-                            variant="outlined"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={getCaseTypeLabel(case_.caseType)}
-                            size="small"
-                            variant="outlined"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={case_.wsiUploaded ? "Загружен" : "Нет"}
-                            color={case_.wsiUploaded ? "success" : "default"}
-                            size="small"
-                            icon={<CloudUpload />}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={getAIStatusLabel(case_.aiAnalysis)}
-                            color={getAIStatusColor(case_.aiAnalysis) as any}
-                            size="small"
-                          />
-                          {case_.aiAnalysis === "pending" && (
-                            <LinearProgress
-                              sx={{ width: 40, height: 4, mt: 0.5 }}
+                            <Typography
+                              variant="h6"
+                              fontWeight="bold"
+                              color="#6366f1"
+                            >
+                              {caseItem.id}
+                            </Typography>
+                            <Chip
+                              label={caseItem.diagnosis}
+                              size="small"
+                              sx={{ bgcolor: "#e0e7ff", color: "#4338ca" }}
                             />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={
-                              case_.status === "active"
-                                ? "Активный"
-                                : "Завершен"
-                            }
-                            color={
-                              case_.status === "active" ? "primary" : "default"
-                            }
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Box display="flex">
-                            <Tooltip title="WSI">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() =>
-                                  navigate(`/canvas?case=${case_.id}`)
-                                }
-                                disabled={!case_.wsiUploaded}
-                              >
-                                <Visibility />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="AI">
-                              <IconButton
-                                size="small"
-                                color="warning"
-                                onClick={() => handleRequestAI(case_.id)}
-                                disabled={case_.aiAnalysis === "pending"}
-                              >
-                                <Psychology />
-                              </IconButton>
-                            </Tooltip>
                           </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </StatsCard>
+
+                          <Typography variant="body1" gutterBottom>
+                            {caseItem.description}
+                          </Typography>
+
+                          <Box display="flex" gap={3} mt={1}>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              <strong>Пациент:</strong>{" "}
+                              <PatientLink to={`/patient/${caseItem.id}`}>
+                                {caseItem.patient}
+                              </PatientLink>
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              <strong>Дата:</strong> {caseItem.date}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              <strong>Орган:</strong> {caseItem.organ}
+                            </Typography>
+                          </Box>
+                        </Grid>
+
+                        {/* Aksiyonlar */}
+                        <Grid item xs={3} sx={{ textAlign: "right" }}>
+                          <Box display="flex" flexDirection="column" gap={1}>
+                            {caseItem.wsi && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                color="success"
+                                startIcon={<Visibility />}
+                                onClick={() =>
+                                  navigate(`/canvas?case=${caseItem.id}`)
+                                }
+                              >
+                                WSI Просмотр
+                              </Button>
+                            )}
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={<Psychology />}
+                              color="warning"
+                            >
+                              ИИ Анализ
+                            </Button>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </CaseCard>
+                </Grid>
+              ))}
+            </Grid>
+          </ContentPanel>
         </Grid>
       </Grid>
 
-      {/* DIALOGLAR (Kısalttım, orijinal mantık aynı) */}
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Добавить новый случай</DialogTitle>
+      {/* Yeni Vaka Ekleme Dialogu */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Новый клинический случай</DialogTitle>
         <DialogContent>
           <TextField
-            fullWidth
+            autoFocus
+            margin="dense"
             label="Имя пациента"
-            value={newCase.patientName}
-            onChange={(e) =>
-              setNewCase({ ...newCase, patientName: e.target.value })
-            }
-            sx={{ mt: 2, mb: 2 }}
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 1 }}
           />
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Тип</InputLabel>
-            <Select
-              value={newCase.caseType}
-              label="Тип"
-              onChange={(e) =>
-                setNewCase({ ...newCase, caseType: e.target.value })
-              }
-            >
+          <TextField
+            margin="dense"
+            label="Диагноз (Предварительный)"
+            fullWidth
+            variant="outlined"
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Тип случая</InputLabel>
+            <Select defaultValue="paid" label="Тип случая">
               <MenuItem value="paid">Платное</MenuItem>
               <MenuItem value="insurance">Страховка</MenuItem>
             </Select>
@@ -623,21 +493,11 @@ const DoctorDashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Отмена</Button>
-          <Button onClick={handleAddCase} variant="contained">
-            Добавить
+          <Button variant="contained" onClick={() => setOpenDialog(false)}>
+            Сохранить
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert severity={snackbar.severity} sx={{ width: "100%" }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </DashboardContainer>
   );
 };
