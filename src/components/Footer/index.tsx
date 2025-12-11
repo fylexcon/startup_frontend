@@ -104,7 +104,7 @@ export default function Footer() {
           </ContactItem>
           <ContactItem>
             <LocationOn fontSize="small" />
-            <span>Москва, Россия</span>
+            <span>Minsk, Belarus</span>
           </ContactItem>
 
           <SocialIcons>
