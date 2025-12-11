@@ -18,7 +18,6 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Divider,
   TextField,
   InputAdornment,
   Select,
@@ -43,23 +42,25 @@ import {
 } from "@mui/icons-material";
 import styled from "styled-components";
 
-// --- STYLED COMPONENTS ---
 const DashboardContainer = styled(Box)`
-  padding: 100px 20px 20px;
+  padding: 100px 24px 24px;
   background-color: #f8fafc;
   min-height: 100vh;
+  font-family: "Inter", sans-serif;
 `;
 
-// Sol Panel (Profil ve Filtreler)
 const SidebarPanel = styled(Paper)`
   padding: 24px;
-  height: 100%;
+  height: calc(100vh - 140px);
   background: white;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  position: sticky;
+  top: 120px;
+  border: 1px solid #e2e8f0;
 `;
 
 const ProfileSection = styled(Box)`
@@ -68,35 +69,41 @@ const ProfileSection = styled(Box)`
   border-bottom: 1px solid #e2e8f0;
 `;
 
-// Sağ Panel (İçerik)
 const ContentPanel = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 24px;
 `;
 
-// İstatistik Kartları
 const StatCard = styled(Card)`
-  border-radius: 16px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid #e2e8f0;
   transition: transform 0.2s;
+  height: 100%;
   &:hover {
     transform: translateY(-4px);
+    border-color: #cbd5e1;
   }
 `;
 
-// İsim Linkleri için Özel Stil
 const NameLink = styled(Link)`
   text-decoration: none;
   color: #1e293b;
-  font-weight: 600;
+  font-weight: 700;
   transition: color 0.2s;
   &:hover {
     color: #6366f1;
   }
 `;
 
-// --- MOCK DATA ---
+const ModernTableContainer = styled(TableContainer)`
+  border-radius: 20px !important;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  background: white;
+`;
+
 const mockStudents = [
   {
     id: 1,
@@ -122,22 +129,6 @@ const mockStudents = [
     faculty: "Лечебный",
     status: "inactive",
   },
-  {
-    id: 4,
-    name: "Елена Козлова",
-    group: "Группа 2",
-    course: "4 курс",
-    faculty: "Лечебный",
-    status: "active",
-  },
-  {
-    id: 5,
-    name: "Сергей Морозов",
-    group: "Группа 3",
-    course: "4 курс",
-    faculty: "Лечебный",
-    status: "active",
-  },
 ];
 
 const mockGrades = [
@@ -145,100 +136,72 @@ const mockGrades = [
     id: 1,
     studentName: "Иван Петров",
     studentId: 1,
-    case: "Случай #123 - Меланома",
+    case: "Меланома",
     status: "graded",
     grade: "5",
     date: "20.11.2023",
-    issueDate: "01.11.2023",
   },
   {
     id: 2,
     studentName: "Анна Сидорова",
     studentId: 2,
-    case: "Случай #124 - Карцинома",
+    case: "Карцинома",
     status: "pending",
     grade: "-",
     date: "21.11.2023",
-    issueDate: "02.11.2023",
-  },
-  {
-    id: 3,
-    studentName: "Дмитрий Иванов",
-    studentId: 3,
-    case: "Случай #123 - Меланома",
-    status: "submitted",
-    grade: "-",
-    date: "22.11.2023",
-    issueDate: "03.11.2023",
   },
 ];
 
 const TeacherDashboard = () => {
   const { user, logout } = useAuth();
   const [tabValue, setTabValue] = useState("1");
-
-  // FILTRE STATE'LERİ
   const [searchQuery, setSearchQuery] = useState("");
   const [filterGroup, setFilterGroup] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
 
-  // FİLTRELEME MANTIĞI
-  const filteredStudents = mockStudents.filter((s) => {
-    const matchSearch = s.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchGroup = filterGroup === "all" || s.group === filterGroup;
-    const matchStatus = filterStatus === "all" || s.status === filterStatus;
-    return matchSearch && matchGroup && matchStatus;
-  });
+  const filteredStudents = mockStudents.filter(
+    (s) =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (filterGroup === "all" || s.group === filterGroup)
+  );
 
-  const filteredGrades = mockGrades.filter((g) => {
-    return g.studentName.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  if (!user) return null;
 
   return (
     <DashboardContainer>
-      <Grid container spacing={3}>
-        {/* --- SOL PANEL: PROFİL VE FİLTRELER --- */}
+      <Grid container spacing={4}>
+        {/* SOL PANEL */}
         <Grid item xs={12} md={3}>
           <SidebarPanel elevation={0}>
-            {/* Profil */}
             <ProfileSection>
               <Avatar
                 sx={{
-                  width: 80,
-                  height: 80,
+                  width: 90,
+                  height: 90,
                   margin: "0 auto 16px",
                   bgcolor: "#6366f1",
-                  fontSize: 32,
+                  fontSize: 36,
                 }}
               >
-                {user?.firstName?.[0] || "T"}
+                {user.firstName[0]}
+                {user.lastName[0]}
               </Avatar>
-              <Typography variant="h6" fontWeight="bold">
-                {user?.firstName} {user?.lastName}
+              <Typography variant="h6" fontWeight="bold" color="#1e293b">
+                {user.firstName} {user.lastName}
               </Typography>
               <Chip
                 label="Преподаватель"
                 color="primary"
                 size="small"
-                sx={{ mt: 1 }}
+                sx={{ mt: 1, fontWeight: 600 }}
               />
 
-              <Box mt={2} textAlign="left">
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  display="block"
-                >
-                  Учреждение: <strong>{user?.institution}</strong>
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  display="block"
-                >
-                  Позиция: <strong>{user?.position}</strong>
+              <Box
+                mt={3}
+                textAlign="left"
+                sx={{ bgcolor: "#f8fafc", p: 2, borderRadius: 2 }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Учреждение: <strong>{user.institution}</strong>
                 </Typography>
               </Box>
 
@@ -249,22 +212,26 @@ const TeacherDashboard = () => {
                 fullWidth
                 startIcon={<Logout />}
                 onClick={logout}
-                sx={{ mt: 3 }}
+                sx={{ mt: 3, borderRadius: 2 }}
               >
                 Выйти
               </Button>
             </ProfileSection>
 
-            {/* Filtreler */}
             <Box>
               <Typography
                 variant="subtitle2"
                 gutterBottom
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  fontWeight: 700,
+                  color: "#64748b",
+                }}
               >
                 <FilterList fontSize="small" /> Фильтры
               </Typography>
-
               <TextField
                 fullWidth
                 size="small"
@@ -278,11 +245,10 @@ const TeacherDashboard = () => {
                     </InputAdornment>
                   ),
                 }}
-                sx={{ mb: 2 }}
+                sx={{ mb: 2, bgcolor: "#f8fafc" }}
               />
-
-              <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-                <InputLabel>Группа (Grup)</InputLabel>
+              <FormControl fullWidth size="small">
+                <InputLabel>Группа</InputLabel>
                 <Select
                   value={filterGroup}
                   label="Группа"
@@ -291,125 +257,94 @@ const TeacherDashboard = () => {
                   <MenuItem value="all">Все</MenuItem>
                   <MenuItem value="Группа 1">Группа 1</MenuItem>
                   <MenuItem value="Группа 2">Группа 2</MenuItem>
-                  <MenuItem value="Группа 3">Группа 3</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth size="small">
-                <InputLabel>Статус</InputLabel>
-                <Select
-                  value={filterStatus}
-                  label="Статус"
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <MenuItem value="all">Все</MenuItem>
-                  <MenuItem value="active">Активен</MenuItem>
-                  <MenuItem value="inactive">Неактивен</MenuItem>
                 </Select>
               </FormControl>
             </Box>
 
-            {/* Hızlı İşlem */}
             <Button
               variant="contained"
               startIcon={<Add />}
               fullWidth
-              sx={{ bgcolor: "#6366f1", mt: 2 }}
+              sx={{ bgcolor: "#6366f1", borderRadius: 2, py: 1.5 }}
             >
               Создать задание
             </Button>
           </SidebarPanel>
         </Grid>
 
-        {/* --- SAĞ PANEL: İÇERİK --- */}
+        {/* SAĞ PANEL */}
         <Grid item xs={12} md={9}>
           <ContentPanel>
-            {/* İstatistikler */}
-            <Grid container spacing={2}>
-              <Grid item xs={6} md={2.4}>
-                <StatCard>
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <Group color="primary" fontSize="small" />
-                      <Typography variant="caption" color="text.secondary">
-                        Группы
-                      </Typography>
-                    </Box>
-                    <Typography variant="h5" fontWeight="bold">
-                      4
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={6} md={2.4}>
-                <StatCard>
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <Person color="success" fontSize="small" />
-                      <Typography variant="caption" color="text.secondary">
-                        Студенты
-                      </Typography>
-                    </Box>
-                    <Typography variant="h5" fontWeight="bold">
-                      120
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={6} md={2.4}>
-                <StatCard>
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <Assignment color="warning" fontSize="small" />
-                      <Typography variant="caption" color="text.secondary">
-                        Задания
-                      </Typography>
-                    </Box>
-                    <Typography variant="h5" fontWeight="bold">
-                      12
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={6} md={2.4}>
-                <StatCard>
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <AccessTime color="error" fontSize="small" />
-                      <Typography variant="caption" color="text.secondary">
-                        Проверка
-                      </Typography>
-                    </Box>
-                    <Typography variant="h5" fontWeight="bold">
-                      8
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
-              <Grid item xs={6} md={2.4}>
-                <StatCard>
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <CheckCircle sx={{ color: "#8b5cf6" }} fontSize="small" />
-                      <Typography variant="caption" color="text.secondary">
-                        Завершено
-                      </Typography>
-                    </Box>
-                    <Typography variant="h5" fontWeight="bold">
-                      85%
-                    </Typography>
-                  </CardContent>
-                </StatCard>
-              </Grid>
+            <Grid container spacing={3}>
+              {[
+                {
+                  label: "Группы",
+                  val: "4",
+                  icon: <Group />,
+                  color: "#3b82f6",
+                },
+                {
+                  label: "Студенты",
+                  val: "120",
+                  icon: <Person />,
+                  color: "#10b981",
+                },
+                {
+                  label: "Задания",
+                  val: "12",
+                  icon: <Assignment />,
+                  color: "#f59e0b",
+                },
+                {
+                  label: "Проверка",
+                  val: "8",
+                  icon: <AccessTime />,
+                  color: "#ef4444",
+                },
+              ].map((item, i) => (
+                <Grid item xs={6} md={3} key={i}>
+                  <StatCard>
+                    <CardContent
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        p: 3,
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          variant="h4"
+                          fontWeight="800"
+                          sx={{ color: item.color }}
+                        >
+                          {item.val}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="600"
+                          color="text.secondary"
+                        >
+                          {item.label}
+                        </Typography>
+                      </Box>
+                      <Avatar
+                        sx={{ bgcolor: item.color + "20", color: item.color }}
+                      >
+                        {item.icon}
+                      </Avatar>
+                    </CardContent>
+                  </StatCard>
+                </Grid>
+              ))}
             </Grid>
 
-            {/* TABLOLAR */}
             <Paper
               sx={{
-                borderRadius: 4,
+                borderRadius: 5,
                 overflow: "hidden",
-                border: "1px solid #e2e8f0",
                 boxShadow: "none",
+                border: "1px solid #e2e8f0",
               }}
             >
               <TabContext value={tabValue}>
@@ -441,17 +376,15 @@ const TeacherDashboard = () => {
                   </TabList>
                 </Box>
 
-                {/* TAB 1: ÖĞRENCİ LİSTESİ */}
                 <TabPanel value="1" sx={{ p: 0 }}>
-                  <TableContainer>
+                  <ModernTableContainer>
                     <Table>
-                      <TableHead sx={{ bgcolor: "#f8fafc" }}>
-                        <TableRow>
+                      <TableHead>
+                        <TableRow sx={{ bgcolor: "#f8fafc" }}>
                           <TableCell width={50}></TableCell>
                           <TableCell>ФИО</TableCell>
                           <TableCell>Группа</TableCell>
                           <TableCell>Курс</TableCell>
-                          <TableCell>Факультет</TableCell>
                           <TableCell>Статус</TableCell>
                           <TableCell align="right">Действия</TableCell>
                         </TableRow>
@@ -461,15 +394,9 @@ const TeacherDashboard = () => {
                           <TableRow key={s.id} hover>
                             <TableCell>
                               <Avatar
-                                sx={{
-                                  width: 32,
-                                  height: 32,
-                                  fontSize: 14,
-                                  bgcolor: "#e2e8f0",
-                                  color: "#475569",
-                                }}
+                                sx={{ width: 32, height: 32, fontSize: 14 }}
                               >
-                                {s.name.charAt(0)}
+                                {s.name[0]}
                               </Avatar>
                             </TableCell>
                             <TableCell>
@@ -479,7 +406,6 @@ const TeacherDashboard = () => {
                             </TableCell>
                             <TableCell>{s.group}</TableCell>
                             <TableCell>{s.course}</TableCell>
-                            <TableCell>{s.faculty}</TableCell>
                             <TableCell>
                               <Chip
                                 label={
@@ -491,7 +417,6 @@ const TeacherDashboard = () => {
                                   s.status === "active" ? "success" : "default"
                                 }
                                 size="small"
-                                variant="outlined"
                               />
                             </TableCell>
                             <TableCell align="right">
@@ -503,18 +428,16 @@ const TeacherDashboard = () => {
                         ))}
                       </TableBody>
                     </Table>
-                  </TableContainer>
+                  </ModernTableContainer>
                 </TabPanel>
 
-                {/* TAB 2: NOTLAR LİSTESİ */}
                 <TabPanel value="2" sx={{ p: 0 }}>
-                  <TableContainer>
+                  <ModernTableContainer>
                     <Table>
-                      <TableHead sx={{ bgcolor: "#f8fafc" }}>
-                        <TableRow>
+                      <TableHead>
+                        <TableRow sx={{ bgcolor: "#f8fafc" }}>
                           <TableCell>Студент</TableCell>
                           <TableCell>Кейс</TableCell>
-                          <TableCell>Дата выдачи</TableCell>
                           <TableCell>Дата сдачи</TableCell>
                           <TableCell>Статус</TableCell>
                           <TableCell>Оценка</TableCell>
@@ -522,7 +445,7 @@ const TeacherDashboard = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {filteredGrades.map((g) => (
+                        {mockGrades.map((g) => (
                           <TableRow key={g.id} hover>
                             <TableCell>
                               <NameLink to={`/student/${g.studentId}`}>
@@ -530,23 +453,16 @@ const TeacherDashboard = () => {
                               </NameLink>
                             </TableCell>
                             <TableCell>{g.case}</TableCell>
-                            <TableCell>{g.issueDate}</TableCell>
                             <TableCell>{g.date}</TableCell>
                             <TableCell>
                               <Chip
                                 label={
                                   g.status === "graded"
                                     ? "Оценено"
-                                    : g.status === "submitted"
-                                    ? "Сдано"
-                                    : "В работе"
+                                    : "На проверке"
                                 }
                                 color={
-                                  g.status === "graded"
-                                    ? "success"
-                                    : g.status === "submitted"
-                                    ? "warning"
-                                    : "default"
+                                  g.status === "graded" ? "success" : "warning"
                                 }
                                 size="small"
                               />
@@ -560,14 +476,14 @@ const TeacherDashboard = () => {
                                 variant="outlined"
                                 sx={{ borderRadius: 2 }}
                               >
-                                {g.status === "graded" ? "Изменить" : "Оценить"}
+                                Оценить
                               </Button>
                             </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
-                  </TableContainer>
+                  </ModernTableContainer>
                 </TabPanel>
               </TabContext>
             </Paper>
