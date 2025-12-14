@@ -1,97 +1,93 @@
-import React from "react";
-import { Checkbox } from "@mui/material";
-import {
-  CardCanvasContainer,
-  CardContainer,
-  CardInfo,
-  CardInfoSubitle,
-  CardInfoTitle,
-  ChipContainer,
-  ClinicTitle,
-  ImgAndDescContainer,
-  MyImg,
-  StyledChip,
-} from "./styles";
-import { StyledButton } from "../../Auth/styles";
-import { useNavigate } from "react-router-dom";
-
-interface CardDataProps {
-  src: string;
-  title: string;
-  subtitle: string;
-  chip: string[];
-  clinic: string;
-  id: number;
-  checked?: boolean;
-  onToggleChecked?: (id: number, checked: boolean) => void;
-}
-
-export const CardData: React.FC<CardDataProps> = ({
-  src,
-  title,
-  subtitle,
-  chip,
-  clinic,
-  id,
-  checked = false,
-  onToggleChecked,
-}) => {
-  const navigate = useNavigate();
-
-  const handleClickCanvas = () => {
-    navigate("/canvas");
-  };
-
-  const handleClickEdit = () => {
-    navigate(`/editcard/${id}`);
-  };
-
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (onToggleChecked) {
-      onToggleChecked(id, event.target.checked);
-    }
-  };
-
-  return (
-    <CardContainer>
-      <Checkbox checked={checked} onChange={handleCheckboxChange} />
-      <ImgAndDescContainer>
-        <MyImg src={src} />
-        <CardInfo>
-          <CardCanvasContainer>
-            <CardInfoTitle>{title}</CardInfoTitle>
-            <StyledButton
-              onClick={handleClickCanvas}
-              style={{
-                width: "200px",
-                backgroundColor: "#d9d9d9",
-                color: "#000",
-                textAlign: "center",
-              }}
-            >
-              Разметить
-            </StyledButton>
-            <StyledButton
-              onClick={handleClickEdit}
-              style={{
-                width: "200px",
-                backgroundColor: "#758bfb",
-                color: "#000",
-                textAlign: "center",
-              }}
-            >
-              Редактировать
-            </StyledButton>
-          </CardCanvasContainer>
-          <CardInfoSubitle>{subtitle}</CardInfoSubitle>
-          <ChipContainer>
-            {chip.map((item, index) => (
-              <StyledChip sx={{ borderRadius: "0" }} label={item} key={index} />
-            ))}
-          </ChipContainer>
-          <ClinicTitle>{clinic}</ClinicTitle>
-        </CardInfo>
-      </ImgAndDescContainer>
-    </CardContainer>
-  );
-};
+// src/components/Archive/CardData/index.tsx
+import React from "react";
+import { Checkbox, Chip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import {
+  CardCanvasContainer,
+  CardContainer,
+  CardInfo,
+  CardInfoSubitle,
+  CardInfoTitle,
+  ChipContainer,
+  ImgAndDescContainer,
+  MyImg,
+} from "../styles"; // Updated path to styles
+
+interface CardDataProps {
+  src: string;
+  title: string;
+  subtitle: string;
+  chip: string[];
+  clinic: string;
+  id: number | string;
+  checked?: boolean;
+  onToggleChecked?: (id: number | string, checked: boolean) => void;
+}
+
+export const CardData: React.FC<CardDataProps> = ({
+  src,
+  title,
+  subtitle,
+  chip,
+  clinic,
+  id,
+  checked = false,
+  onToggleChecked,
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <CardContainer>
+      <Checkbox
+        checked={checked}
+        onChange={(e) =>
+          onToggleChecked && onToggleChecked(id, e.target.checked)
+        }
+      />
+      <ImgAndDescContainer>
+        <MyImg src={src} />
+        <CardInfo>
+          <CardCanvasContainer>
+            <CardInfoTitle>{title}</CardInfoTitle>
+            <button
+              onClick={() => navigate("/canvas")}
+              style={{
+                padding: "10px 20px",
+                background: "#d9d9d9",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Разметить
+            </button>
+            <button
+              onClick={() => navigate(`/editcard/${id}`)}
+              style={{
+                padding: "10px 20px",
+                background: "#758bfb",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Редактировать
+            </button>
+          </CardCanvasContainer>
+          <CardInfoSubitle>{subtitle}</CardInfoSubitle>
+          <ChipContainer>
+            {chip.map((item, index) => (
+              <Chip
+                key={index}
+                label={item}
+                color="primary"
+                variant="outlined"
+              />
+            ))}
+          </ChipContainer>
+        </CardInfo>
+      </ImgAndDescContainer>
+    </CardContainer>
+  );
+};

@@ -1,0 +1,51 @@
+// src/components/Archive/data.ts
+import card_img_1 from "../../assets/Cardimg_1.jpg";
+import card_img_2 from "../../assets/Cardimg_2.jpg";
+
+export const MOCK_CASES = [
+  {
+    id: "4098678-9",
+    src: card_img_1,
+    title: "4098678-9",
+    patientName: "Пациент Иванов И.И.",
+    subtitle: "На СО щеки в ретромолярной области справа...",
+    chip: ["Плоский лишай"],
+    clinic: "Минская областная стоматологическая поликлиника",
+    date: "2025-10-15",
+    status: "completed",
+    wsiUploaded: true,
+    aiAnalysis: "completed",
+    doctor: "Д-р Петров А.В.",
+    icd10: "L43.9",
+  },
+  {
+    id: "9098678-9",
+    src: card_img_2,
+    title: "9098678-9",
+    patientName: "Пациент Сидоров П.П.",
+    subtitle: "в ретромолярной области слева...",
+    chip: ["Плоский лишай"],
+    clinic: "Минская областная стоматологическая поликлиника",
+    date: "2025-10-18",
+    status: "in_progress",
+    wsiUploaded: true,
+    aiAnalysis: "pending",
+    doctor: "Д-р Волков С.М.",
+    icd10: "L43.8",
+  },
+  {
+    id: "1234567-8",
+    src: card_img_1,
+    title: "1234567-8",
+    patientName: "Пациент Козлов М.Н.",
+    subtitle: "Биопсия новообразования слизистой оболочки",
+    chip: ["Базально-клеточная карцинома"],
+    clinic: "Городская больница №5",
+    date: "2025-10-20",
+    status: "active",
+    wsiUploaded: false,
+    aiAnalysis: "not_requested",
+    doctor: "Д-р Смирнова Е.А.",
+    icd10: "C44.3",
+  },
+];

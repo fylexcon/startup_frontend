@@ -1,120 +1,182 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Slider,
-  ToggleButtonGroup,
-  ToggleButton,
-  Autocomplete,
-} from "@mui/material";
-import dayjs, { Dayjs } from "dayjs";
-import { DatePicker } from "@mui/x-date-pickers";
-import { DateRangePicker } from "@mui/x-date-pickers-pro";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { StyledTextField, StyledButton } from "../../Auth/styles";
-import { FilterContainer } from "./styles";
-
-const organs = ["Сердце", "Мозг", "Почки", "Нос"];
-const diagnosis = ["Меланома", "Невус с диспалазией", "Синий невус"];
-
-export default function FilterModal() {
-  const [sex, setSex] = useState("");
-  const [ageRange, setAgeRange] = useState<[number, number]>([18, 65]);
-  const [date, setDate] = useState<Dayjs | null>(null);
-  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
-  const [selectionType, setSelectionType] = useState<"single" | "range">("single");
-
-  return (
-    <FilterContainer>
-      <Typography variant="h6" gutterBottom>
-        Фильтры
-      </Typography>
-
-      <Box component="form" noValidate sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        <FormControl fullWidth>
-          <InputLabel id="sex-label">Пол</InputLabel>
-          <Select
-            labelId="sex-label"
-            value={sex}
-            label="Пол"
-            onChange={e => setSex(e.target.value as string)}
-          >
-            <MenuItem value="male">Мужской</MenuItem>
-            <MenuItem value="female">Женский</MenuItem>
-          </Select>
-        </FormControl>
-
-        <Box>
-          <Typography>Диапазон возраста</Typography>
-          <Slider
-            value={ageRange}
-            onChange={(_, v) => Array.isArray(v) && setAgeRange(v as [number,number])}
-            valueLabelDisplay="auto"
-            min={18}
-            max={65}
-            sx={{ color: "#4500ff" }}
-          />
-          <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
-            <StyledTextField
-              label="От"
-              type="number"
-              value={ageRange[0]}
-              onChange={e => setAgeRange([Number(e.target.value), ageRange[1]])}
-            />
-            <StyledTextField
-              label="До"
-              type="number"
-              value={ageRange[1]}
-              onChange={e => setAgeRange([ageRange[0], Number(e.target.value)])}
-            />
-          </Box>
-        </Box>
-
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <ToggleButtonGroup
-            value={selectionType}
-            exclusive
-            onChange={(_, v) => v && setSelectionType(v)}
-            sx={{ alignSelf: "center" }}
-          >
-            <ToggleButton value="single">Одна дата</ToggleButton>
-            <ToggleButton value="range">Диапазон</ToggleButton>
-          </ToggleButtonGroup>
-
-          {selectionType === "single" ? (
-            <DatePicker
-              label="Выберите дату"
-              value={date}
-              onChange={setDate}
-              slotProps={{ textField: { fullWidth: true } }}
-            />
-          ) : (
-            <DateRangePicker
-              value={dateRange}
-              onChange={setDateRange}
-              slotProps={{
-                textField: { fullWidth: true, variant: "outlined" }
-              }}
-            />
-          )}
-        </LocalizationProvider>
-
-        <Autocomplete
-          options={organs}
-          renderInput={params => <StyledTextField {...params} label="Органы" />}
-        />
-        <Autocomplete
-          options={diagnosis}
-          renderInput={params => <StyledTextField {...params} label="Диагноз" />}
-        />
-
-        <StyledButton variant="contained">Применить</StyledButton>
-      </Box>
-    </FilterContainer>
-  );
-}
+// src/components/Archive/Filter/index.tsx
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Slider,
+  Autocomplete,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Grid,
+  IconButton,
+} from "@mui/material";
+import { Close, FilterList } from "@mui/icons-material";
+
+const organs = ["Сердце", "Мозг", "Почки", "Печень", "Легкие", "Кожа"];
+const diagnosis = ["Меланома", "Невус", "Карцинома", "Киста", "Воспаление"];
+
+interface FilterModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function FilterModal({ open, onClose }: FilterModalProps) {
+  const [sex, setSex] = useState("");
+  const [ageRange, setAgeRange] = useState<[number, number]>([18, 65]);
+  const [selectedOrgan, setSelectedOrgan] = useState<string | null>(null);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState<string | null>(
+    null
+  );
+
+  const handleApply = () => {
+    // Logic to apply filters goes here
+    onClose();
+  };
+
+  const handleReset = () => {
+    setSex("");
+    setAgeRange([18, 65]);
+    setSelectedOrgan(null);
+    setSelectedDiagnosis(null);
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: { borderRadius: "20px", padding: "10px" },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={1}>
+          <FilterList color="primary" />
+          <Typography variant="h6" fontWeight="bold">
+            Расширенные фильтры
+          </Typography>
+        </Box>
+        <IconButton onClick={onClose}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent dividers>
+        <Grid container spacing={3} sx={{ pt: 1 }}>
+          {/* Sex & Organ */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Пол пациента</InputLabel>
+              <Select
+                value={sex}
+                label="Пол пациента"
+                onChange={(e) => setSex(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>Не выбрано</em>
+                </MenuItem>
+                <MenuItem value="male">Мужской</MenuItem>
+                <MenuItem value="female">Женский</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Autocomplete
+              options={organs}
+              value={selectedOrgan}
+              onChange={(_, newValue) => setSelectedOrgan(newValue)}
+              renderInput={(params) => (
+                <TextField {...params} label="Орган / Ткань" size="small" />
+              )}
+            />
+          </Grid>
+
+          {/* Age Slider */}
+          <Grid item xs={12}>
+            <Box sx={{ px: 2, py: 1, bgcolor: "#f5f5f5", borderRadius: 2 }}>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Возрастной диапазон: {ageRange[0]} - {ageRange[1]} лет
+              </Typography>
+              <Slider
+                value={ageRange}
+                onChange={(_, v) =>
+                  Array.isArray(v) && setAgeRange(v as [number, number])
+                }
+                valueLabelDisplay="auto"
+                min={0}
+                max={100}
+                sx={{ color: "#4500ff" }}
+              />
+            </Box>
+          </Grid>
+
+          {/* Date Range */}
+          <Grid item xs={12} md={6}>
+            <TextField
+              type="date"
+              label="Дата (От)"
+              fullWidth
+              size="small"
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              type="date"
+              label="Дата (До)"
+              fullWidth
+              size="small"
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+
+          {/* Diagnosis */}
+          <Grid item xs={12}>
+            <Autocomplete
+              options={diagnosis}
+              value={selectedDiagnosis}
+              onChange={(_, newValue) => setSelectedDiagnosis(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Предварительный диагноз"
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 3 }}>
+        <Button onClick={handleReset} color="error" variant="text">
+          Сбросить
+        </Button>
+        <Button
+          onClick={handleApply}
+          variant="contained"
+          color="primary"
+          sx={{ px: 4, borderRadius: 2 }}
+        >
+          Применить
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
