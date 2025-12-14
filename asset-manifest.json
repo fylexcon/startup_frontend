@@ -1,9 +1,6 @@
 {
   "files": {
-    "main.js": "/startup_frontend/static/js/main.78b1c2b2.js",
-    "static/js/239.f02ed636.chunk.js": "/startup_frontend/static/js/239.f02ed636.chunk.js",
-    "static/js/977.b87cd1b5.chunk.js": "/startup_frontend/static/js/977.b87cd1b5.chunk.js",
-    "static/js/455.6e6fd636.chunk.js": "/startup_frontend/static/js/455.6e6fd636.chunk.js",
+    "main.js": "/startup_frontend/static/js/main.7ca8f69b.js",
     "static/media/Breast_cancer_img.jpg": "/startup_frontend/static/media/Breast_cancer_img.c342c9c272135d588795.jpg",
     "static/media/covid19.jpg": "/startup_frontend/static/media/covid19.e65e648fb01d54e33497.jpg",
     "static/media/нр1.png": "/startup_frontend/static/media/нр1.c097a36fbd5f5d513f7a.png",
@@ -32,14 +29,10 @@
     "static/media/aha1.jpg": "/startup_frontend/static/media/aha1.403f9d06343cb6b564d8.jpg",
     "static/media/vk-icon.svg": "/startup_frontend/static/media/vk-icon.ebdcc8ebf3291c412785dd2bda72b030.svg",
     "index.html": "/startup_frontend/index.html",
-    "static/media/filter_icon.svg": "/startup_frontend/static/media/filter_icon.7f8899c92459cae2d50a48aa5055e17d.svg",
     "static/media/tg-icon.svg": "/startup_frontend/static/media/tg-icon.8a224561e4db6d1324413ac87ec42d36.svg",
-    "main.78b1c2b2.js.map": "/startup_frontend/static/js/main.78b1c2b2.js.map",
-    "239.f02ed636.chunk.js.map": "/startup_frontend/static/js/239.f02ed636.chunk.js.map",
-    "977.b87cd1b5.chunk.js.map": "/startup_frontend/static/js/977.b87cd1b5.chunk.js.map",
-    "455.6e6fd636.chunk.js.map": "/startup_frontend/static/js/455.6e6fd636.chunk.js.map"
+    "main.7ca8f69b.js.map": "/startup_frontend/static/js/main.7ca8f69b.js.map"
   },
   "entrypoints": [
-    "static/js/main.78b1c2b2.js"
+    "static/js/main.7ca8f69b.js"
   ]
 }
