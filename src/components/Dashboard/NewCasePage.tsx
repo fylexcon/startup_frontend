@@ -73,10 +73,10 @@ const NewCasePage = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {/* SOL KOLON: Hasta ve Süreç Bilgileri */}
+        {/* SOL KOLON */}
         <Grid item xs={12} lg={4}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {/* Kart 1: Hasta Bilgileri */}
+            {/* Kart 1 */}
             <Paper
               sx={{
                 p: 3,
@@ -105,7 +105,6 @@ const NewCasePage = () => {
                   fullWidth
                   size="small"
                 />
-
                 <Box sx={{ display: "flex", gap: 2 }}>
                   <TextField
                     label="Идентификационный №"
@@ -121,7 +120,6 @@ const NewCasePage = () => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Box>
-
                 <FormControl fullWidth size="small">
                   <InputLabel>Пол</InputLabel>
                   <Select label="Пол" defaultValue="male">
@@ -129,7 +127,6 @@ const NewCasePage = () => {
                     <MenuItem value="female">Женский</MenuItem>
                   </Select>
                 </FormControl>
-
                 <TextField
                   label="Адрес проживания"
                   multiline
@@ -140,7 +137,7 @@ const NewCasePage = () => {
               </Box>
             </Paper>
 
-            {/* Kart 2: Klinik Veriler */}
+            {/* Kart 2 */}
             <Paper
               sx={{
                 p: 3,
@@ -179,7 +176,6 @@ const NewCasePage = () => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Box>
-
                 <FormControl fullWidth size="small">
                   <InputLabel>Способ получения</InputLabel>
                   <Select label="Способ получения" defaultValue="ops">
@@ -188,7 +184,6 @@ const NewCasePage = () => {
                     <MenuItem value="exc">Эксцизионная биопсия</MenuItem>
                   </Select>
                 </FormControl>
-
                 <Box sx={{ display: "flex", gap: 2 }}>
                   <TextField
                     type="datetime-local"
@@ -210,7 +205,7 @@ const NewCasePage = () => {
           </Box>
         </Grid>
 
-        {/* SAĞ KOLON: Patolojik Bulgular */}
+        {/* SAĞ KOLON */}
         <Grid item xs={12} lg={8}>
           <Paper
             sx={{

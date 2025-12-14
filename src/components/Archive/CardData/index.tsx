@@ -1,4 +1,3 @@
-// src/components/Archive/CardData/index.tsx
 import React from "react";
 import { Checkbox, Chip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,7 @@ import {
   ChipContainer,
   ImgAndDescContainer,
   MyImg,
-} from "../styles"; // Updated path to styles
+} from "./styles"; // styles.ts ile aynı dizindeyse
 
 interface CardDataProps {
   src: string;

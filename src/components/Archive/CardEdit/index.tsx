@@ -1,16 +1,7 @@
-// src/components/Archive/CardEdit/index.tsx
 import React, { useState } from "react";
 import { TextField, Box, Button, Typography, Paper } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-
-const CardEditContainer = styled.div`
-  margin-top: 120px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-bottom: 40px;
-`;
+import { CardEditContainer } from "./styles";
 
 export default function CreatePdfForm() {
   const { id } = useParams();

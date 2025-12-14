@@ -1,11 +1,10 @@
-// src/components/Archive/data.ts
 import card_img_1 from "../../assets/Cardimg_1.jpg";
 import card_img_2 from "../../assets/Cardimg_2.jpg";
 
 export const MOCK_CASES = [
   {
     id: "4098678-9",
-    src: card_img_1,
+    src: card_img_1 || "",
     title: "4098678-9",
     patientName: "Пациент Иванов И.И.",
     subtitle: "На СО щеки в ретромолярной области справа...",
@@ -20,7 +19,7 @@ export const MOCK_CASES = [
   },
   {
     id: "9098678-9",
-    src: card_img_2,
+    src: card_img_2 || "",
     title: "9098678-9",
     patientName: "Пациент Сидоров П.П.",
     subtitle: "в ретромолярной области слева...",
@@ -35,7 +34,7 @@ export const MOCK_CASES = [
   },
   {
     id: "1234567-8",
-    src: card_img_1,
+    src: card_img_1 || "",
     title: "1234567-8",
     patientName: "Пациент Козлов М.Н.",
     subtitle: "Биопсия новообразования слизистой оболочки",

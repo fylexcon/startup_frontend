@@ -1,4 +1,3 @@
-// src/components/Archive/Filter/index.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -37,7 +36,6 @@ export default function FilterModal({ open, onClose }: FilterModalProps) {
   );
 
   const handleApply = () => {
-    // Logic to apply filters goes here
     onClose();
   };
 
@@ -78,7 +76,6 @@ export default function FilterModal({ open, onClose }: FilterModalProps) {
 
       <DialogContent dividers>
         <Grid container spacing={3} sx={{ pt: 1 }}>
-          {/* Sex & Organ */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth size="small">
               <InputLabel>Пол пациента</InputLabel>
@@ -107,7 +104,6 @@ export default function FilterModal({ open, onClose }: FilterModalProps) {
             />
           </Grid>
 
-          {/* Age Slider */}
           <Grid item xs={12}>
             <Box sx={{ px: 2, py: 1, bgcolor: "#f5f5f5", borderRadius: 2 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -126,7 +122,6 @@ export default function FilterModal({ open, onClose }: FilterModalProps) {
             </Box>
           </Grid>
 
-          {/* Date Range */}
           <Grid item xs={12} md={6}>
             <TextField
               type="date"
@@ -146,7 +141,6 @@ export default function FilterModal({ open, onClose }: FilterModalProps) {
             />
           </Grid>
 
-          {/* Diagnosis */}
           <Grid item xs={12}>
             <Autocomplete
               options={diagnosis}

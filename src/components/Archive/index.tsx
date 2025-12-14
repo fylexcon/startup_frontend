@@ -1,4 +1,3 @@
-// src/components/Archive/index.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -45,7 +44,7 @@ import {
   FilterList,
 } from "@mui/icons-material";
 
-// Styled Components
+// Stil Dosyaları
 import {
   ArchiveContainer,
   StatsCard,
@@ -54,14 +53,14 @@ import {
   DataContainer,
 } from "./styles";
 
-// Components & Data
-import FilterModal from "./Filter"; // The improved filter
-import { MOCK_CASES } from "./data"; // THE FIX: Imported real data array
+// Bileşenler ve Veri
+import FilterModal from "./Filter";
+import { MOCK_CASES } from "./data"; // Veri dosyasını import ediyoruz
 
 export default function Archive() {
   const navigate = useNavigate();
 
-  // State
+  // State Tanımları
   const [openFilter, setOpenFilter] = useState(false);
   const [openWSIDialog, setOpenWSIDialog] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
@@ -74,12 +73,13 @@ export default function Archive() {
     severity: "success" as "success" | "error" | "info",
   });
 
-  // Initialize state with valid data array
   const [cases, setCases] = useState(MOCK_CASES);
 
-  // Handlers
+  // --- Handlers ---
+
   const handleCreateCase = () => navigate("/new-case");
   const toggleFilter = () => setOpenFilter(true);
+
   const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) =>
     setAllChecked(e.target.checked);
   const handleTabChange = (_: React.SyntheticEvent, val: number) =>
@@ -101,7 +101,16 @@ export default function Archive() {
     }
   };
 
-  // Helpers
+  const handleExportData = () => {
+    setSnackbar({
+      open: true,
+      message: "Экспорт данных начат...",
+      severity: "info",
+    });
+  };
+
+  // --- Helpers ---
+
   const getStatusLabel = (status: string) =>
     ({
       active: "Активный",
@@ -134,7 +143,7 @@ export default function Archive() {
       failed: "error",
     }[status] || "default");
 
-  // Filtering
+  // --- Filter Logic ---
   const filteredCases = cases.filter((case_) => {
     if (tabValue === 1 && case_.status !== "active") return false;
     if (tabValue === 2 && case_.status !== "in_progress") return false;
@@ -163,7 +172,7 @@ export default function Archive() {
 
   return (
     <ArchiveContainer>
-      {/* Stats */}
+      {/* İstatistikler */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
           { l: "Всего случаев", v: stats.total, c: "primary.main" },
@@ -205,7 +214,7 @@ export default function Archive() {
         </Tabs>
       </TabContainer>
 
-      {/* Actions */}
+      {/* Action Bar */}
       <ActionBar>
         <Box display="flex" gap={2} alignItems="center" flex={1}>
           <TextField
@@ -262,6 +271,11 @@ export default function Archive() {
           >
             Создать случай
           </Button>
+          <Tooltip title="Экспорт данных">
+            <IconButton color="primary" onClick={handleExportData}>
+              <Download />
+            </IconButton>
+          </Tooltip>
         </Box>
       </ActionBar>
 
